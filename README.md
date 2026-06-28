@@ -46,6 +46,8 @@ Verified:
 | `trino/catalog/iceberg.properties` | Trino Iceberg REST catalog config |
 | `dbt/elt_smoke` | dbt smoke project |
 | `dags/dbt_trino_iceberg_smoke.py` | Airflow DAG for dbt smoke run |
+| `scripts/update-nested-git.sh` | Pulls the nested DAG and dbt repositories before deployment |
+| `scripts/deploy.sh` | Updates nested repos, then starts Docker Compose with rebuild |
 | `scripts/bootstrap-cloudflare.sh` | R2 bucket/Data Catalog bootstrap helper |
 | `scripts/check-r2-catalog-auth.sh` | Verifies the R2 Data Catalog token can access the configured warehouse |
 | `.env.example` | Required local values without secrets |
@@ -98,6 +100,25 @@ docker compose up -d --force-recreate trino
 ```
 
 ## Start Local Services
+
+Update nested DAG/dbt repositories and start services:
+
+```bash
+./scripts/deploy.sh
+```
+
+The nested repositories are configured as:
+
+| Path | Remote |
+| --- | --- |
+| `dags` | `https://github.com/ASAC-DE-bigkk/ASAC-DAG` |
+| `dbt` | `https://github.com/ASAC-DE-bigkk/ASAC-DBT` |
+
+To update only DAG/dbt without restarting services:
+
+```bash
+./scripts/update-nested-git.sh
+```
 
 Initialize Airflow metadata and admin user:
 
