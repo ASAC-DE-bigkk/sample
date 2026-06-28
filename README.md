@@ -29,8 +29,11 @@ Verified:
 | Item | Value |
 | --- | --- |
 | R2 bucket | `seoul` |
+| Dev R2 bucket | `seoul-dev` |
 | Trino catalog | `iceberg` |
+| Dev Trino catalog | `iceberg_dev` |
 | Smoke schema | `ops_smoke` |
+| dbt target | `prod` |
 | Airflow web port | `30585` |
 | Airflow DAG | `dbt_trino_iceberg_smoke` |
 | dbt project/profile | `elt_smoke` |
@@ -86,6 +89,40 @@ Required Airflow/Postgres local values:
 - `POSTGRES_DB`
 
 `CLOUDFLARE_API_TOKEN` can stay empty when you use `npx wrangler login` locally. `WRANGLER_R2_SQL_AUTH_TOKEN` is only needed for optional Wrangler R2 SQL checks.
+
+Optional dev Cloudflare/R2 values:
+
+- `R2_DEV_BUCKET_NAME`
+- `TRINO_DEV_ICEBERG_CATALOG`
+- `DEV_SMOKE_SCHEMA`
+- `DBT_TARGET`
+- `R2_DEV_RAW_PREFIX`
+- `R2_DEV_ENDPOINT`
+- `R2_DEV_ACCESS_KEY_ID`
+- `R2_DEV_SECRET_ACCESS_KEY`
+- `R2_DEV_DATA_CATALOG_TOKEN`
+- `R2_DEV_DATA_CATALOG_URI`
+- `R2_DEV_DATA_CATALOG_WAREHOUSE`
+
+The Trino dev catalog is `iceberg_dev`. dbt can target it with:
+
+```bash
+docker compose exec --workdir /opt/airflow/dbt/elt_smoke airflow-scheduler /home/airflow/dbt-venv/bin/dbt debug --target dev
+docker compose exec --workdir /opt/airflow/dbt/elt_smoke airflow-scheduler /home/airflow/dbt-venv/bin/dbt build --target dev
+```
+
+Use `DEV_SMOKE_SCHEMA=dev_<github_id>` so dev tables do not collide. If it is omitted, dev falls back to `dev_local`, not the prod smoke schema. Do not reuse prod credentials for dev testing.
+
+To run the Airflow DAG against dev, set these values in `.env` and recreate the Airflow services:
+
+```env
+DBT_TARGET=dev
+TRINO_DEV_ICEBERG_CATALOG=iceberg_dev
+DEV_SMOKE_SCHEMA=dev_<github_id>
+R2_DEV_RAW_PREFIX=dev/<github_id>/raw/sample_events
+```
+
+With `DBT_TARGET=dev`, the DAG uses `R2_DEV_*`, writes to `iceberg_dev.<DEV_SMOKE_SCHEMA>.bronze_sample_events`, and runs dbt with `--target dev`.
 
 ## Bootstrap Cloudflare
 
@@ -170,6 +207,7 @@ Trino is only exposed on the Docker network. Use `docker compose exec` for direc
 ```bash
 docker compose exec trino trino --execute "SHOW CATALOGS"
 docker compose exec trino trino --execute "SHOW SCHEMAS FROM iceberg"
+docker compose exec trino trino --execute "SHOW SCHEMAS FROM iceberg_dev"
 docker compose exec trino trino --execute "SHOW TABLES FROM iceberg.ops_smoke"
 docker compose exec trino trino --execute "SELECT * FROM iceberg.ops_smoke.gold_event_type_metrics ORDER BY event_type"
 ```
