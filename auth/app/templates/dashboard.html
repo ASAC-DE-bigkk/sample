@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}대시보드{% endblock %}
+{% block body %}
+<h1>로그인됨</h1>
+<p>{{ email }} 님, 환영합니다. (보호된 페이지)</p>
+<form method="post" action="/logout">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit">로그아웃</button>
+</form>
+{% endblock %}

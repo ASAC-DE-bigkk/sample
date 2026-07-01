@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+<h1>{{ title }}</h1>
+<p>{{ message }}</p>
+{% if login_link %}<p><a href="/login">로그인하러 가기</a></p>{% endif %}
+{% endblock %}

@@ -1,0 +1,7 @@
+# auth 서비스 ignore
+.env
+*.db
+*.sqlite3
+__pycache__/
+*.pyc
+.pytest_cache/

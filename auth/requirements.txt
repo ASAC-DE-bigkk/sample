@@ -1,0 +1,11 @@
+# auth 서비스 런타임 의존성
+fastapi>=0.110,<1
+uvicorn[standard]>=0.29
+sqlalchemy>=2.0,<3
+passlib>=1.7          # pbkdf2_sha256(외부 C 확장 불필요). bcrypt 원하면 passlib[bcrypt]+bcrypt<4.1
+itsdangerous>=2.1
+jinja2>=3.1
+python-multipart>=0.0.9
+
+# 테스트(선택)
+# pytest>=8 ; httpx>=0.27

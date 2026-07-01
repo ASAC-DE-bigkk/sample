@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}auth{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 420px; margin: 3rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.3rem; }
+    label { display:block; margin-top:.6rem; font-size:.9rem; }
+    input { width: 100%; padding: .5rem; margin-top:.2rem; box-sizing: border-box; }
+    button { margin-top: 1rem; padding: .5rem 1rem; cursor: pointer; }
+    .err { color: #b00020; margin: .5rem 0; }
+    a { color: #06c; }
+  </style>
+</head>
+<body>
+  {% block body %}{% endblock %}
+</body>
+</html>
