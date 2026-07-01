@@ -9,10 +9,18 @@ import datetime as _dt
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+# 공통 알림(backend+pipeline 공용) — 경로 밖이면 비활성(no-op). 값 없으면 no-op.
+try:
+    from notifications import from_env as _notifier_from_env
+    from notifications import notify_exception as _notify_exception
+except Exception:  # notifications 미가용
+    _notifier_from_env = None
+    _notify_exception = None
 
 from . import security as sec
 from .config import get_settings
@@ -29,6 +37,17 @@ CSRF_COOKIE = "csrftoken"
 @app.on_event("startup")
 def _startup() -> None:
     init_db()
+    app.state.notifier = _notifier_from_env() if _notifier_from_env else None
+
+
+@app.exception_handler(Exception)
+async def _unhandled(request: Request, exc: Exception):
+    # 예외를 공통 알림으로(있으면). 클라이언트엔 스택 미노출(제네릭 500).
+    notifier = getattr(app.state, "notifier", None)
+    if notifier is not None and _notify_exception is not None:
+        _notify_exception(notifier, exc, where=f"auth:{request.url.path}",
+                          context={"method": request.method})
+    return PlainTextResponse("Internal Server Error", status_code=500)
 
 
 @app.middleware("http")
