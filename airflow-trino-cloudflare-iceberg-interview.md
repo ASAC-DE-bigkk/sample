@@ -277,7 +277,7 @@ Cloudflare bootstrap script 범위:
 - dbt project name: `elt_smoke`
 - dbt profile name: `elt_smoke`
 - dbt profile target: `prod`
-- Airflow DAG id: `dbt_trino_iceberg_smoke`
+- Airflow DAG id: `common_dbt_smoke`
 - smoke seed name: `sample_events`
 - smoke model name: `smoke_event_counts`
 
@@ -299,7 +299,7 @@ Cloudflare bootstrap script 범위:
 - `./scripts/check-r2-catalog-auth.sh`가 HTTP `200` 반환
 - Trino `SHOW CATALOGS`에서 `iceberg` catalog 확인
 - Trino `CREATE SCHEMA IF NOT EXISTS iceberg.ops_smoke` 성공
-- Airflow DAG `dbt_trino_iceberg_smoke` 성공
+- Airflow DAG `common_dbt_smoke` 성공
 - 성공 run id: `manual__2026-06-27T14:29:09.888034+00:00`
 - task 상태: `prepare_smoke_schema`, `seed_sample_events`, `run_smoke_model`, `test_smoke_relations`, `cleanup_smoke` 모두 success
 - cleanup 후 `SHOW TABLES FROM iceberg.ops_smoke` 결과는 비어 있음
