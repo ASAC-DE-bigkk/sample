@@ -328,7 +328,7 @@ R2 Data Catalog token can access the configured warehouse.
 end-to-end smoke DAG 성공 run:
 
 ```text
-dag_id: dbt_trino_iceberg_smoke
+dag_id: common_dbt_smoke
 run_id: manual__2026-06-27T14:29:09.888034+00:00
 state: success
 ```

@@ -21,7 +21,7 @@ Verified:
 - Airflow has Python clients for R2 object upload and Trino SQL ingestion.
 - Trino loads the `iceberg` catalog.
 - R2 Data Catalog auth check returns HTTP `200`.
-- The Airflow DAG `dbt_trino_iceberg_smoke` completed successfully.
+- The Airflow DAG `common_dbt_smoke` completed successfully.
 - `iceberg.ops_smoke` remains as the reserved smoke schema. Raw and bronze data are allowed to accumulate; silver/gold deduplicate by `event_id`.
 
 ## Fixed Names
@@ -35,7 +35,7 @@ Verified:
 | Smoke schema | `ops_smoke` |
 | dbt target | `prod` |
 | Airflow web port | `30585` |
-| Airflow DAG | `dbt_trino_iceberg_smoke` |
+| Airflow DAG | `common_dbt_smoke` |
 | dbt project/profile | `elt_smoke` |
 | Bronze table | `bronze_sample_events` |
 | Silver model | `silver_sample_events` |
@@ -53,7 +53,7 @@ Verified:
 | `trino/catalog/iceberg.properties` | Trino Iceberg REST catalog config |
 | `dbt/elt_smoke` | dbt medallion smoke project |
 | `dbt/elt_smoke/seeds/sample_events.csv` | Source fixture used by Airflow to simulate external API data |
-| `dags/dbt_trino_iceberg_smoke.py` | Airflow DAG for R2 raw upload, bronze load, and dbt validation |
+| `dags/common_dbt_smoke.py` | Airflow DAG for R2 raw upload, bronze load, and dbt validation |
 | `scripts/update-nested-git.sh` | Pulls the nested DAG and dbt repositories before deployment |
 | `scripts/deploy.sh` | Updates nested repos, then starts Docker Compose with rebuild |
 | `scripts/bootstrap-cloudflare.sh` | R2 bucket/Data Catalog bootstrap helper |
@@ -184,10 +184,10 @@ Use the credentials from `.env`.
 
 ## Run Smoke DAG
 
-Trigger `dbt_trino_iceberg_smoke` from the Airflow UI, or run:
+Trigger `common_dbt_smoke` from the Airflow UI, or run:
 
 ```bash
-docker compose exec airflow-scheduler airflow dags trigger dbt_trino_iceberg_smoke
+docker compose exec airflow-scheduler airflow dags trigger common_dbt_smoke
 ```
 
 The DAG runs:
@@ -235,8 +235,8 @@ docker compose run --rm --no-deps --workdir /opt/airflow/dbt/elt_smoke --entrypo
 Check the most recent smoke run:
 
 ```bash
-docker compose exec airflow-scheduler airflow dags list-runs dbt_trino_iceberg_smoke -o json
-docker compose exec airflow-scheduler airflow tasks states-for-dag-run dbt_trino_iceberg_smoke <run-id>
+docker compose exec airflow-scheduler airflow dags list-runs common_dbt_smoke -o json
+docker compose exec airflow-scheduler airflow tasks states-for-dag-run common_dbt_smoke <run-id>
 ```
 
 ## Mentee Workflow
